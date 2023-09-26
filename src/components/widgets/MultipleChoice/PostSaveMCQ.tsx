@@ -38,6 +38,7 @@ function PostSaveMCQ({ widget }: Props) {
                   <RadioGroupItem
                     value={choice.label}
                     id={choice.id}
+                    className='text-white'
                   />
                   <Label>{choice.label}</Label>
                 </div>

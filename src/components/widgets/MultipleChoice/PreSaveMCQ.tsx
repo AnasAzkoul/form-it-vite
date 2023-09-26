@@ -1,5 +1,4 @@
 'use client';
-import { useEffect } from 'react';
 import WidgetControlPanel from '../ui/WidgetControlPanel';
 import OptionInput from '../ui/optionInput';
 import QuestionInput from '../ui/QuestionInput';
@@ -16,6 +15,9 @@ import {
 } from '@/components/ui/card';
 import { Separator } from '@radix-ui/react-separator';
 
+import { useDroppableSlice } from '@/app/hooks';
+import {current} from '@reduxjs/toolkit';
+
 function PreSaveMCQ({ widget }: Props) {
   const {
     handleSaveWidgetData,
@@ -26,7 +28,21 @@ function PreSaveMCQ({ widget }: Props) {
   } = usePreSaveMCQWidget(widget);
   const { choices } = widget as MultipleChoiceQuestionType;
 
-  useEffect(() => {}, []);
+  const {dispatch, updateOptionsValue, widgets} = useDroppableSlice();
+
+  const currentChoice = (choiceId: string) => {
+    const choiceValue = choices.find(item => item.id === choiceId)?.label;
+    return choiceValue;
+  }
+
+  const handleUpdateLabelInput = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
+    const payLoad = {
+      id,
+      labelValue: e.target.value,
+    };
+
+    dispatch(updateOptionsValue(payLoad));
+  }
 
   return (
     <Card className='bg-primary text-input'>
@@ -56,9 +72,9 @@ function PreSaveMCQ({ widget }: Props) {
               <OptionInput
                 key={option.id}
                 id={option.id}
-                onChange={(e) => handleOptionChange(e)}
+                onChange={(e) => handleUpdateLabelInput(e, option.id)}
                 name={option.id}
-                value={options[option.id]}
+                value={currentChoice(option.id)}
               />
             ))}
           </div>

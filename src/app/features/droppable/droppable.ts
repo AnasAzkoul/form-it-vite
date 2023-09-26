@@ -7,6 +7,7 @@ import {
   WidgetTypes,
   WidgetVariantsType,
 } from '@/lib/types';
+import {OptionsInputType} from '@/components/widgets/MultipleChoice/types';
 
 export const initialState: DroppableStateType = {
   widgets: [],
@@ -46,6 +47,17 @@ export const droppableSlice = createSlice({
         }
       });
     },
+    updateOptionsValue: (state, action: PayloadAction<{id: string, labelValue: string}>) => {
+      state.widgets.map(widget => {
+        if(widget.variant === WidgetVariantsType.MULTIPLE_CHOICE_QUESTION) {
+          widget.choices.map(choice => {
+            if(choice.id === action.payload.id) {
+              choice.label = action.payload.labelValue
+            }
+          })
+        }
+      })
+    },
     saveWidgetData: (state, action: PayloadAction<SaveWidgetPayloadType>) => {
       const serializedLocalState = localStorage.getItem(
         LocalStorageItems.Widgets
@@ -57,7 +69,7 @@ export const droppableSlice = createSlice({
           widget.widgetQuestion = action.payload.widgetQuestion;
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          widget.choices = action.payload.choices;
+          // widget.choices = action.payload.choices;
         }
       });
     },
@@ -78,6 +90,7 @@ export const {
   deleteOption,
   editWidgetData,
   saveWidgetData,
+  updateOptionsValue
 } = droppableSlice.actions;
 
 export default droppableSlice.reducer;
