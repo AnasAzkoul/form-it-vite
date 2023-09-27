@@ -23,7 +23,7 @@ const DroppableBox = () => {
     <div className='col-span-7 col-start-5 mt-20'>
       <div
         className={classNames(
-          'container border-2 border-dashed border-primary max-w-4xl flex flex-col gap-3 p-3 min-h-[200px] pb-20',
+          'container border-2 border-dashed border-primary max-w-4xl flex flex-col gap-1 p-3 min-h-[200px] pb-20',
           isOver && 'border-red-400'
         )}
         onDragOver={(e) => handleOnDragOver(e)}

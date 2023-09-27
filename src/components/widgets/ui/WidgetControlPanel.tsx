@@ -39,11 +39,11 @@ const WidgetControlPanel = ({ widget }: WidgetControlPanelProps) => {
 
         <Button
           onClick={() => dispatch(deleteWidget(widget.id))}
-          className='bg-red-600 hover:bg-red-800 text-xs p-1'
+          className='bg-red-900 hover:bg-red-700 text-xs p-1 group'
           size='icon'
           type='button'
         >
-          <CloseIcon />
+          <CloseIcon className='text-gray-300  group-hover:text-gray-200' />
         </Button>
       </div>
     </>

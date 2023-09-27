@@ -98,6 +98,7 @@ export const droppableSlice = createSlice({
             widget.isError = true;
             widget.errMessage = 'Please fill in all the inputs before you save';
           } else {
+            widget.isError = false;
             widget.isSaved = true;
           }
         } else if (
