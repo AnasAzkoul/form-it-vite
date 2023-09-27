@@ -13,6 +13,8 @@ export interface BaseWidgetType {
   id: string;
   widgetQuestion: string;
   isSaved: boolean;
+  isError: boolean;
+  errMessage: string | null
 }
 
 export interface MultipleChoiceQuestionType extends BaseWidgetType {
@@ -40,5 +42,3 @@ export type SaveWidgetPayloadType = {
   widgetQuestion: string;
   choices: ChoiceType[];
 };
-
-

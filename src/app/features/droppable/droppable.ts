@@ -1,13 +1,29 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { v4 as uuid } from 'uuid';
-import { DroppableStateType, LocalStorageItems } from './types';
-import {
-  SaveWidgetPayloadType,
-  WidgetTypes,
-  WidgetVariantsType,
-} from '@/lib/types';
-import {OptionsInputType} from '@/components/widgets/MultipleChoice/types';
+import { DroppableStateType } from './types';
+import { WidgetTypes, WidgetVariantsType } from '@/lib/types';
+import { MultipleChoiceQuestion } from '@/lib/widgetClasses';
+
+const validateQuestion = (question: string): boolean => {
+  if (question.length < 10) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+const validateMultipleChoiceQuestion = (widget: WidgetTypes): boolean => {
+  let isAllValid = false;
+  const { choices, widgetQuestion } = widget as MultipleChoiceQuestion;
+
+  const isQuestionValid = validateQuestion(widgetQuestion);
+  if (isQuestionValid === true) {
+    isAllValid = choices.every((choice) => choice.label.length > 4);
+  }
+
+  return isAllValid;
+};
 
 export const initialState: DroppableStateType = {
   widgets: [],
@@ -19,6 +35,16 @@ export const droppableSlice = createSlice({
   reducers: {
     addNewWidget: (state, action: PayloadAction<WidgetTypes>) => {
       state.widgets.push(action.payload);
+    },
+    updateQuestionInputValue: (
+      state,
+      action: PayloadAction<{ id: string; questionValue: string }>
+    ) => {
+      state.widgets.map((widget) => {
+        if (widget.id === action.payload.id) {
+          widget.widgetQuestion = action.payload.questionValue;
+        }
+      });
     },
     deleteWidget: (state, action: PayloadAction<string>) => {
       const filteredWidgets = state.widgets.filter(
@@ -47,29 +73,45 @@ export const droppableSlice = createSlice({
         }
       });
     },
-    updateOptionsValue: (state, action: PayloadAction<{id: string, labelValue: string}>) => {
-      state.widgets.map(widget => {
-        if(widget.variant === WidgetVariantsType.MULTIPLE_CHOICE_QUESTION) {
-          widget.choices.map(choice => {
-            if(choice.id === action.payload.id) {
-              choice.label = action.payload.labelValue
+    updateOptionsValue: (
+      state,
+      action: PayloadAction<{ id: string; labelValue: string }>
+    ) => {
+      state.widgets.map((widget) => {
+        if (widget.variant === WidgetVariantsType.MULTIPLE_CHOICE_QUESTION) {
+          widget.choices.map((choice) => {
+            if (choice.id === action.payload.id) {
+              choice.label = action.payload.labelValue;
             }
-          })
+          });
         }
-      })
+      });
     },
-    saveWidgetData: (state, action: PayloadAction<SaveWidgetPayloadType>) => {
-      const serializedLocalState = localStorage.getItem(
-        LocalStorageItems.Widgets
-      );
-
+    saveWidgetData: (state, action: PayloadAction<string>) => {
       state.widgets.forEach((widget) => {
-        if (widget.id === action.payload.id) {
-          widget.isSaved = true;
-          widget.widgetQuestion = action.payload.widgetQuestion;
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          // widget.choices = action.payload.choices;
+        if (
+          widget.id === action.payload &&
+          widget.variant !== WidgetVariantsType.MULTIPLE_CHOICE_QUESTION
+        ) {
+          const isQuestionValid = validateQuestion(widget.widgetQuestion);
+          if (isQuestionValid === false) {
+            widget.isError = true;
+            widget.errMessage = 'Please fill in all the inputs before you save';
+          } else {
+            widget.isSaved = true;
+          }
+        } else if (
+          widget.id === action.payload &&
+          widget.variant === WidgetVariantsType.MULTIPLE_CHOICE_QUESTION
+        ) {
+          const isMCQValid = validateMultipleChoiceQuestion(widget);
+          if (isMCQValid === false) {
+            widget.isError = true;
+            widget.errMessage = 'Please fill in all the inputs before you save';
+          } else {
+            widget.isError = false;
+            widget.isSaved = true;
+          }
         }
       });
     },
@@ -90,7 +132,8 @@ export const {
   deleteOption,
   editWidgetData,
   saveWidgetData,
-  updateOptionsValue
+  updateOptionsValue,
+  updateQuestionInputValue,
 } = droppableSlice.actions;
 
 export default droppableSlice.reducer;

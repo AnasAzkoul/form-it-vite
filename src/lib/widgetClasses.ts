@@ -22,11 +22,15 @@ class Widget implements BaseWidgetType {
   id: string;
   widgetQuestion: string;
   isSaved: boolean;
+  isError: boolean;
+  errMessage: string | null;
 
   constructor() {
     this.id = uuidv4();
     this.widgetQuestion = '';
     this.isSaved = false;
+    this.isError = false;
+    this.errMessage = null; 
   }
 }
 

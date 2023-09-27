@@ -12,37 +12,47 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import { Separator } from '@radix-ui/react-separator';
 
 import { useDroppableSlice } from '@/app/hooks';
-import {current} from '@reduxjs/toolkit';
 
 function PreSaveMCQ({ widget }: Props) {
-  const {
-    handleSaveWidgetData,
-    handleOptionChange,
-    setQuestion,
-    question,
-    options,
-  } = usePreSaveMCQWidget(widget);
+  const { handleSaveWidgetData } = usePreSaveMCQWidget(widget);
   const { choices } = widget as MultipleChoiceQuestionType;
 
-  const {dispatch, updateOptionsValue, widgets} = useDroppableSlice();
+  const { dispatch, updateOptionsValue, widgets, updateQuestionInputValue } =
+    useDroppableSlice();
 
   const currentChoice = (choiceId: string) => {
-    const choiceValue = choices.find(item => item.id === choiceId)?.label;
+    const choiceValue = choices.find((item) => item.id === choiceId)?.label;
     return choiceValue;
-  }
+  };
 
-  const handleUpdateLabelInput = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
+  const handleUpdateLabelInput = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: string
+  ) => {
+    const labelValue = e.target.value;
     const payLoad = {
       id,
-      labelValue: e.target.value,
+      labelValue: labelValue,
     };
 
     dispatch(updateOptionsValue(payLoad));
-  }
+  };
+
+  const handleUpdateQuestionInput = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const payload = {
+      id: widget.id,
+      questionValue: e.target.value,
+    };
+
+    dispatch(updateQuestionInputValue(payload));
+  };
 
   return (
     <Card className='bg-primary text-input'>
@@ -62,8 +72,8 @@ function PreSaveMCQ({ widget }: Props) {
             Please fill in the question as well as the options
           </CardDescription>
           <QuestionInput
-            onChange={(e) => setQuestion(e.target.value)}
-            value={question}
+            onChange={(e) => handleUpdateQuestionInput(e)}
+            value={widget.widgetQuestion}
             id='widget-question'
           />
 
@@ -90,6 +100,11 @@ function PreSaveMCQ({ widget }: Props) {
           </div>
         </form>
       </CardContent>
+      {widget.isError && (
+        <CardFooter>
+          <p className='text-destructive font-light text-sm'>{widget.errMessage}</p>
+        </CardFooter>
+      )}
     </Card>
   );
 }

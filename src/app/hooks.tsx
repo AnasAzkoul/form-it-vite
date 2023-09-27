@@ -6,6 +6,7 @@ import {
   saveWidgetData,
   editWidgetData,
   updateOptionsValue,
+  updateQuestionInputValue
 } from './features/droppable/droppable';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -25,5 +26,6 @@ export const useDroppableSlice = () => {
     saveWidgetData,
     editWidgetData,
     updateOptionsValue,
+    updateQuestionInputValue
   };
 };

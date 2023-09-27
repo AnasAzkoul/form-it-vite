@@ -25,41 +25,18 @@ export const usePreSaveMCQWidget = (widget: WidgetTypes) => {
 
   const handleSaveWidgetData = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newChoices = generateOptionsArray(options);
-    const payload = {
-      id: widget.id,
-      widgetQuestion: question,
-      choices: newChoices,
-    };
+    // const newChoices = generateOptionsArray(options);
+    // const payload = {
+    //   id: widget.id,
+    //   widgetQuestion: question,
+    //   choices: newChoices,
+    // };
 
-    dispatch(saveWidgetData(payload));
+    dispatch(saveWidgetData(widget.id));
   };
 
-  const mapChoicesToOptions = (choices: ChoiceType[]) => {
-    const optionsObject: OptionsInputType = {};
-    choices.forEach((choice) => {
-      if (!optionsObject[choice.id]) {
-        optionsObject[choice.id] = choice.label;
-      }
-    });
-    setOptions(optionsObject);
-  };
-
-  useEffect(() => {
-    const currentWidget = widgets.find(
-      (item) => item.id === widget.id
-    ) as MultipleChoiceQuestionType;
-    if (currentWidget.choices.length > 0) {
-      mapChoicesToOptions(currentWidget.choices);
-      setQuestion(currentWidget.widgetQuestion);
-    }
-  }, []);
 
   return {
     handleSaveWidgetData,
-    handleOptionChange,
-    setQuestion,
-    question,
-    options,
   };
 };
