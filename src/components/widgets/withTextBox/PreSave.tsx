@@ -9,34 +9,17 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useDroppableSlice } from '@/app/hooks';
 import WidgetControlPanel from '../ui/WidgetControlPanel';
 import { Textarea } from '@/components/ui/textarea';
 import QuestionInput from '../ui/QuestionInput';
+import { useWidgetActions } from '../hooks';
 
 type Props = {
   widget: WidgetTypes;
 };
 
 const PreSave = ({ widget }: Props) => {
-  const { dispatch, saveWidgetData, updateQuestionInputValue } =
-    useDroppableSlice();
-
-  const handleUpdateQuestionValue = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const payload = {
-      id: widget.id,
-      questionValue: e.target.value,
-    };
-
-    dispatch(updateQuestionInputValue(payload));
-  };
-
-  const handleSaveWidgetData = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    dispatch(saveWidgetData(widget.id));
-  }
+  const {handleSaveWidgetData, handleUpdateQuestionValue} = useWidgetActions(widget)
 
   return (
     <Card className='bg-primary text-input border-none'>
